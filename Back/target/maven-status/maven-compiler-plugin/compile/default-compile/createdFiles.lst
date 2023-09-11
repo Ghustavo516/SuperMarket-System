@@ -1,0 +1,4 @@
+com/api/supermarket_api/SupermarketApiApplication.class
+com/api/supermarket_api/Mercado/ClienteController.class
+com/api/supermarket_api/Mercado/Cliente.class
+com/api/supermarket_api/Mercado/ClienteRepositorio.class

@@ -1,0 +1,22 @@
+<h2 class="content-block">Clientes</h2>
+<dx-data-grid
+  id="grid"
+  [dataSource]="clienteSource"
+  [repaintChangesOnly]="true"
+  [showBorders]="true">
+  <dxo-scrolling mode="virtual"></dxo-scrolling>
+  <dxo-editing
+      mode="form"
+      [allowUpdating]="true"
+      [allowAdding]="true"
+      [allowDeleting]="true">
+  </dxo-editing>
+  <dxi-column dataField="id" caption="ID" [allowEditing]="false"></dxi-column>
+  <dxi-column dataField="nome" caption="Nome"></dxi-column>
+  <dxi-column dataField="codigo" caption="Codigo Cliente"></dxi-column>
+</dx-data-grid>
+
+
+<!-- https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/FormEditing/Angular/Light/ -->
+<!-- https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/CRUDOperations/Angular/Light/ -->
+<!-- https://js.devexpress.com/Documentation/ApiReference/Data_Layer/CustomStore/ -->

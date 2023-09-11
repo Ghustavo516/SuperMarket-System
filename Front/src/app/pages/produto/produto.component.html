@@ -1,0 +1,18 @@
+<h2 class="content-block">Produtos</h2>
+<dx-data-grid
+  id="grid"
+  [dataSource]="produtosSource"
+  [repaintChangesOnly]="true"
+  [showBorders]="true">
+  <dxo-scrolling mode="virtual"></dxo-scrolling>
+  <dxo-editing
+      mode="form"
+      [allowUpdating]="true"
+      [allowAdding]="true"
+      [allowDeleting]="true">
+  </dxo-editing>
+  <dxi-column dataField="id" caption="ID" [allowEditing]="false"></dxi-column>
+  <dxi-column dataField="codicoProduto" caption="Codigo Produto"></dxi-column>
+  <dxi-column dataField="descricao" caption="Descrição do Produto"></dxi-column>
+  <dxi-column dataField="valorUnitario" caption="Valor Unitario"></dxi-column>
+</dx-data-grid>

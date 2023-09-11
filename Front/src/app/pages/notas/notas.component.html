@@ -1,0 +1,20 @@
+<h2 class="content-block">Notas</h2>
+<dx-data-grid
+  id="grid"
+  [dataSource]="notaSource"
+  [repaintChangesOnly]="true"
+  [showBorders]="true">
+  <dxo-scrolling mode="virtual"></dxo-scrolling>
+  <dxo-editing
+    mode="form"
+    [allowAdding]="true"
+    [allowDeleting]="true"
+    [allowUpdating]="true"
+  ></dxo-editing>
+  <dxi-column dataField="id" caption="ID"></dxi-column>
+  <dxi-column dataField="numeroNota" caption="Numero Nota"></dxi-column>
+  <dxi-column dataField="dataCompra" caption="Data Compra" dataType="date"></dxi-column>
+  <dxi-column dataField="cliente" caption="Cliente" [customizeText]="formataNomeCliente"></dxi-column>
+  <dxi-column dataField="itens" caption="Itens"></dxi-column>
+  <dxi-column dataField="totalNota" caption="Total Nota"></dxi-column>
+</dx-data-grid>
