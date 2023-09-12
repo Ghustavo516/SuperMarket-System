@@ -23,7 +23,11 @@ public class ItensNota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    //Relacionamento ItensNota - Notas
+    @ManyToOne(cascade = CascadeType.ALL)
+    private NotaFiscal nota;
+    
     //Declaração da coluna totalNota
     @Column(name = "itensSequenciais")
     private Integer itensSequenciais;
@@ -41,9 +45,6 @@ public class ItensNota {
     @Column(name = "valorTotal")
     private BigDecimal valorTotal;
 
-    //Relacionamento ItensNota - Notas
-    @ManyToOne(cascade = CascadeType.ALL)
-    private NotaFiscal nota;
 
     public Long getId() {
         return this.id;

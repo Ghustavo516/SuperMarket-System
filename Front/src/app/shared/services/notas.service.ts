@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notas } from 'src/app/model/notas';
+import { Observable } from 'rxjs';
+import { Nota } from 'src/app/model/nota';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +10,8 @@ export class NotasService {
 
   constructor(private http: HttpClient) {}
 
-  loadNotas(URL: string): Promise<Notas[]>{
-    return this.http.get<Notas[]>(`${URL}/notaFiscal`).toPromise()
-    .then((response) => response || []);
+  loadNotas(URL: string): Observable<Nota[]>{
+    return this.http.get<Nota[]>(`${URL}/notaFiscal`)
   }
 
   insertNotas(URL: string, values:any): Promise<any>{

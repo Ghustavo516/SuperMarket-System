@@ -6,15 +6,48 @@
   [showBorders]="true">
   <dxo-scrolling mode="virtual"></dxo-scrolling>
   <dxo-editing
-    mode="form"
+    mode="popup"
     [allowAdding]="true"
     [allowDeleting]="true"
     [allowUpdating]="true"
-  ></dxo-editing>
+  >
+
+  <dxo-form [colCount]="2">
+    <dxi-item dataField="numeroNota"></dxi-item>
+    <dxi-item dataField="dataCompra"></dxi-item>
+    <dxi-item dataField="cliente"></dxi-item>
+    <dxi-item dataField="totalNota"></dxi-item>
+    <dxi-item dataField="itens" [colSpan]="2"></dxi-item>
+  </dxo-form>
+
+</dxo-editing>
   <dxi-column dataField="id" caption="ID"></dxi-column>
   <dxi-column dataField="numeroNota" caption="Numero Nota"></dxi-column>
   <dxi-column dataField="dataCompra" caption="Data Compra" dataType="date"></dxi-column>
-  <dxi-column dataField="cliente" caption="Cliente" [customizeText]="formataNomeCliente"></dxi-column>
-  <dxi-column dataField="itens" caption="Itens"></dxi-column>
+  <dxi-column dataField="cliente" caption="Cliente"></dxi-column>
+  <dxi-column dataField="itens" caption="Itens" [visible]="false" editCellTemplate="itensCellTemplate"></dxi-column>
   <dxi-column dataField="totalNota" caption="Total Nota"></dxi-column>
+
+  <div *dxTemplate="let data of 'itensCellTemplate'">
+    <dx-data-grid [dataSource]="data.value">
+      <dxo-editing
+        mode="row"
+        [allowAdding]="true"
+        [allowDeleting]="true"
+        [allowUpdating]="true"
+      ></dxo-editing>
+
+      <dxi-column dataField="id" caption="ID"></dxi-column>
+      <dxi-column dataField="nota" caption="Numero da Nota"></dxi-column>
+      <dxi-column dataField="itensSequenciais" caption="Itens da Nota"></dxi-column>
+      <dxi-column dataField="produto_id" caption="Produto" editCellTemplate="selectBoxProdutos"></dxi-column>
+      <dxi-column dataField="quantProdutos" caption="Quantidade"></dxi-column>
+      <dxi-column dataField="valorTotal" caption="Total"></dxi-column>
+
+      <div *dxTemplate="let produto of 'selectBoxProdutos'">
+        <dx-select-box [dataSource]="produto.value"></dx-select-box>
+      </div>
+
+    </dx-data-grid>
+  </div>
 </dx-data-grid>

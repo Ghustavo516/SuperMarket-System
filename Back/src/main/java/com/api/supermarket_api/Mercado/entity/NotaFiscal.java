@@ -27,7 +27,6 @@ public class NotaFiscal {
     private Date dataCompra;
 
     //Criando relacionamento para com tabela de cliente
-    
     @ManyToOne()
     @JoinColumn(name = "cliente_id") //SE NÃO FUNCIONAR USAR O FOREIGN KEY
     private Cliente cliente;
