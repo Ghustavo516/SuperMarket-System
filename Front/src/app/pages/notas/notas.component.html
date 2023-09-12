@@ -57,7 +57,9 @@
 
       <div *dxTemplate="let product of 'selectBoxProdutos'">
         <dx-select-box
-          [items]="teste">
+          [items]="produtoSource"
+          displayExpr="descricao">
+
         </dx-select-box>
       </div>
 

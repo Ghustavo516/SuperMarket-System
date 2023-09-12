@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Produto } from 'src/app/model/produto';
 
 @Injectable({
@@ -12,6 +13,10 @@ export class ProdutosService {
   loadProdutos(URL: string): Promise<Produto[]>{
     return this.http.get<Produto[]>(`${URL}/produto`).toPromise()
     .then((response) => response || []);
+  }
+
+  loadProdutosSelectBox(URL: string): Observable<Produto[]>{
+    return this.http.get<Produto[]>(`${URL}/produto`)
   }
 
   insertProdutos(URL: string, values:any): Promise<any>{

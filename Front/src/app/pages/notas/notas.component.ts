@@ -1,3 +1,4 @@
+import { ProdutosService } from './../../shared/services/produtos.service';
 import { Component, OnInit } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -6,6 +7,7 @@ import { NotasService } from 'src/app/shared/services/notas.service';
 import { ClientesService } from 'src/app/shared/services/clientes.service';
 import { Nota } from 'src/app/model/nota';
 import { Cliente } from 'src/app/model/cliente';
+import { Produto } from 'src/app/model/produto';
 
 @Component({
   selector: 'app-notas',
@@ -14,26 +16,25 @@ import { Cliente } from 'src/app/model/cliente';
 })
 export class NotasComponent implements OnInit{
 
+  //Dados do banco
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
-
-  editNomeSelectBoxDefault?: string
+  produtoSource: Produto[] = [];
 
   URL: string = "http://localhost:8080/api";
-
-  teste: any[] = ['teste', 'teste']
 
   clienteSelecionadoEvent: any;
   selectClientDefaultName: any;
 
   constructor(
     private notasService: NotasService,
-    private clienteService: ClientesService) {
+    private clienteService: ClientesService,
+    private produtoService: ProdutosService) {
   }
 
   ngOnInit(): void {
     this.loadDataNotas();
-    this.populaCliente();
+    this.loadDataCliente();
   }
 
   loadDataNotas(){
@@ -74,11 +75,18 @@ export class NotasComponent implements OnInit{
     })
   }
 
-  populaCliente(){
-    //Carrega os todos os nome cadastrados de clientes para ser utilizado durante o processo de CRUD
+  loadDataCliente(){
+    //Carrega todos os clientes cadastrados no banco de dados
     this.clienteService.loadClienteSelectBox(this.URL).subscribe((cliente) => {
       this.clientesSource = cliente;
-    })
+    });
+  }
+
+  loadDataProducts(){
+    //Carrega todos os produtos cadastrados no banco de dados
+    this.produtoService.loadProdutosSelectBox(this.URL).subscribe((produto) => {
+      this.produtoSource = produto;
+    });
   }
 
   nameChangeClient(event: any){
@@ -87,14 +95,15 @@ export class NotasComponent implements OnInit{
   }
 
   showNameUser(nameClient: any){
+    //Exibe o nome do cliente na coluna de clientes
     if(nameClient.value && nameClient.value.nome){
       return nameClient.value.nome;
     }
   }
 
-  editingProcess(e:any){
+  editingProcess(e:any){//Evento quando clica no botão de edição
+    //Seleciona o nome do cliente e ja seta como padrão dentro do popup com o nome do cliente ja preenchido
     const nameUserSearching = e.data.cliente.nome;
-
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching);
     this.selectClientDefaultName = this.clientesSource[valueIndex]
   }
