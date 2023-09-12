@@ -19,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ItensNotaController {
 
     @Autowired

@@ -11,5 +11,4 @@ export class Cliente {
       this.nome = ClientesAPI.nome;
     }
   }
-
 }

@@ -1,6 +1,7 @@
 import { Cliente } from '../../model/cliente';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,10 @@ export class ClientesService {
   loadClientes(URL: string): Promise<Cliente[]> {
     return this.http.get<Cliente[]>(`${URL}/cliente`).toPromise()
     .then((response) => response || []);
+  }
+
+  loadClienteSelectBox(URL: string): Observable<Cliente[]> {
+    return this.http.get<Cliente[]>(`${URL}/cliente`)
   }
 
   // Método para inserir um novo cliente
