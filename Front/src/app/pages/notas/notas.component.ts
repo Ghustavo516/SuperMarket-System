@@ -69,11 +69,9 @@ export class NotasComponent implements OnInit{
     console.log(updateData);
     const id = event.key.id;
     console.log(this.clienteSelecionadoEvent);
-    //Altera o nome do cliente com o valor substituido
 
+    //Altera o nome do cliente com o valor substituido e mantem caso não alterado
     event.data.cliente = this.clienteSelecionadoEvent;
-    console.log(event.data.cliente)
-    console.log(this.clienteSelecionadoEvent)
 
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
@@ -127,11 +125,12 @@ export class NotasComponent implements OnInit{
   //CRUD datagrid itens ----------------------------
 
   insertDataItens(event: any){
-    console.log('inserindo');
-    console.log(event);
     const itens = event.data;
+    itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
+    itens.nota = {
+      id: event.data.nota
+    }
 
-    itens.produto = this.produtoSelecionadoEvent
     this.itensService.insertItensNota(this.URL, itens).subscribe(() => {
       this.loadDataNotas();
       //Rever o conceito se deve ser loadNota ou loadItens para melhor funcionamento
@@ -145,7 +144,6 @@ export class NotasComponent implements OnInit{
     const id = event.key.id;
 
     updateItens.produto = this.produtoSelecionadoEvent
-    // console.log(updateItens)
 
     this.itensService.updateItensNota(this.URL, id, updateItens).subscribe(() => {
       console.log('sucessso ')
