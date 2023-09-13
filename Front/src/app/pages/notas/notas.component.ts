@@ -22,6 +22,7 @@ export class NotasComponent implements OnInit{
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
   produtoSource: Produto[] = [];
+  itensSource: ItensNota[] = [];
 
   URL: string = "http://localhost:8080/api";
 
@@ -138,17 +139,19 @@ export class NotasComponent implements OnInit{
   }
 
   updateDataItens(event: any){
-    console.log("atualizando")
-    console.log(event.data)
     const updateItens = event.data;
     const id = event.key.id;
 
-    updateItens.produto = this.produtoSelecionadoEvent
+    updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
+
+    updateItens.nota = {
+      id: event.data.nota
+    }
+    console.log(updateItens)
 
     this.itensService.updateItensNota(this.URL, id, updateItens).subscribe(() => {
-      console.log('sucessso ')
-      this.loadDataNotas();
-    })
+        this.loadDataNotas();
+    });
   }
 
   deleteDataItens(event: any){
@@ -173,8 +176,10 @@ export class NotasComponent implements OnInit{
   }
 
   editingProduct(product: any){
-    const productNameSearching = product.data.produto.descricao;
-    const valueIndex = this.produtoSource.findIndex((produto) => produto.descricao === productNameSearching);
+    const productNameSearching = product.data.produto;
+    this.produtoSelecionadoEvent = productNameSearching
+
+    const valueIndex = this.produtoSource.findIndex((produto) => produto.descricao === productNameSearching.descricao);
     this.selectProdutoDefaultName = this.produtoSource[valueIndex]
   }
 }
