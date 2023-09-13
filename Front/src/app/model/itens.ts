@@ -9,4 +9,13 @@ export class ItensNota{
   produto?: Produto;
   quantProdutos?: number;
   valorTotal?: number;
+
+  constructor(itensAPI?: any ){
+    this.id = itensAPI.id;
+    this.nota = itensAPI.nota;
+    this.itensSequenciais = itensAPI.itensSequenciais;
+    this.produto = itensAPI.produto;
+    this.quantProdutos = itensAPI.quantProdutos;
+    this.valorTotal = itensAPI.valorTotal;
+  }
 }

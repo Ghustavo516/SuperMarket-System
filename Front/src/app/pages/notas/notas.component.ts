@@ -1,3 +1,4 @@
+import { ItensNotaService } from './../../shared/services/itens-nota.service';
 import { ProdutosService } from './../../shared/services/produtos.service';
 import { Component, OnInit } from '@angular/core';
 import { NgModule } from '@angular/core';
@@ -8,6 +9,7 @@ import { ClientesService } from 'src/app/shared/services/clientes.service';
 import { Nota } from 'src/app/model/nota';
 import { Cliente } from 'src/app/model/cliente';
 import { Produto } from 'src/app/model/produto';
+import { ItensNota } from 'src/app/model/itens';
 
 @Component({
   selector: 'app-notas',
@@ -26,17 +28,25 @@ export class NotasComponent implements OnInit{
   clienteSelecionadoEvent: any;
   selectClientDefaultName: any;
 
+  produtoSelecionadoEvent: any;
+  selectProdutoDefaultName: any;
+
+  itens: ItensNota[] = []
+
   constructor(
     private notasService: NotasService,
     private clienteService: ClientesService,
-    private produtoService: ProdutosService) {
+    private produtoService: ProdutosService,
+    private itensService: ItensNotaService) {
   }
 
   ngOnInit(): void {
     this.loadDataNotas();
     this.loadDataCliente();
+    this.loadDataProducts();
   }
 
+  //CRUD DataGrid Nota -----------------------------------
   loadDataNotas(){
     //Carrega todos os valores da nota
     this.notasService.loadNotas(this.URL).subscribe((notas) => {
@@ -56,10 +66,14 @@ export class NotasComponent implements OnInit{
     //Atualiza valores de notas
     console.log("Atualizando")
     const updateData = event.data;
+    console.log(updateData);
     const id = event.key.id;
-
+    console.log(this.clienteSelecionadoEvent);
     //Altera o nome do cliente com o valor substituido
+
     event.data.cliente = this.clienteSelecionadoEvent;
+    console.log(event.data.cliente)
+    console.log(this.clienteSelecionadoEvent)
 
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
@@ -75,6 +89,7 @@ export class NotasComponent implements OnInit{
     })
   }
 
+  //Carrega dados cliente e produtos ------------
   loadDataCliente(){
     //Carrega todos os clientes cadastrados no banco de dados
     this.clienteService.loadClienteSelectBox(this.URL).subscribe((cliente) => {
@@ -103,9 +118,66 @@ export class NotasComponent implements OnInit{
 
   editingProcess(e:any){//Evento quando clica no botão de edição
     //Seleciona o nome do cliente e ja seta como padrão dentro do popup com o nome do cliente ja preenchido
-    const nameUserSearching = e.data.cliente.nome;
-    const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching);
+    const nameUserSearching = e.data.cliente;
+    this.clienteSelecionadoEvent = nameUserSearching;
+    const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
     this.selectClientDefaultName = this.clientesSource[valueIndex]
+  }
+
+  //CRUD datagrid itens ----------------------------
+
+  insertDataItens(event: any){
+    console.log('inserindo');
+    console.log(event);
+    const itens = event.data;
+
+    itens.produto = this.produtoSelecionadoEvent
+    this.itensService.insertItensNota(this.URL, itens).subscribe(() => {
+      this.loadDataNotas();
+      //Rever o conceito se deve ser loadNota ou loadItens para melhor funcionamento
+    })
+  }
+
+  updateDataItens(event: any){
+    console.log("atualizando")
+    console.log(event.data)
+    const updateItens = event.data;
+    const id = event.key.id;
+
+    updateItens.produto = this.produtoSelecionadoEvent
+    // console.log(updateItens)
+
+    this.itensService.updateItensNota(this.URL, id, updateItens).subscribe(() => {
+      console.log('sucessso ')
+      this.loadDataNotas();
+    })
+  }
+
+  deleteDataItens(event: any){
+    console.log('deletando');
+    console.log(event)
+    const id = event.data.id;
+    this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
+      this.loadDataNotas();
+    })
+  }
+
+  showNameProduct(nameProduct: any){
+    //Exibe o nome de produtos na coluna de produtos
+    if(nameProduct.value && nameProduct.value.descricao){
+      return nameProduct.value.descricao;
+    }
+  }
+
+  nameProductChanged(productName: any){
+    this.produtoSelecionadoEvent = productName.value;
+    console.log(productName)
+  }
+
+  editingProduct(product: any){
+    const productNameSearching = product.data.produto.descricao;
+    const valueIndex = this.produtoSource.findIndex((produto) => produto.descricao === productNameSearching);
+    this.selectProdutoDefaultName = this.produtoSource[valueIndex]
   }
 }
 

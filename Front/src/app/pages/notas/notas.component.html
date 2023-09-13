@@ -4,24 +4,23 @@
   [dataSource]="notaSource"
   (onRowInserted)="insertDataNota($event)"
   (onRowUpdated)="updateDataNota($event)"
-  (onEditingStart)="editingProcess($event)"
-  (onRowRemoved)="deleteDataNota($event)">
+  (onRowRemoved)="deleteDataNota($event)"
+  (onEditingStart)="editingProcess($event)">
   <dxo-scrolling mode="virtual"></dxo-scrolling>
+
   <dxo-editing
     mode="popup"
     [allowAdding]="true"
     [allowDeleting]="true"
-    [allowUpdating]="true"
-  >
-
-  <dxo-form [colCount]="2">
-    <dxi-item dataField="numeroNota"></dxi-item>
-    <dxi-item dataField="dataCompra"></dxi-item>
-    <dxi-item dataField="cliente"></dxi-item>
-    <dxi-item dataField="totalNota"></dxi-item>
-    <dxi-item dataField="itens" [colSpan]="2"></dxi-item>
-  </dxo-form>
-</dxo-editing>
+    [allowUpdating]="true">
+    <dxo-form [colCount]="2">
+      <dxi-item dataField="numeroNota"></dxi-item>
+      <dxi-item dataField="dataCompra"></dxi-item>
+      <dxi-item dataField="cliente"></dxi-item>
+      <dxi-item dataField="totalNota"></dxi-item>
+      <dxi-item dataField="itens" [colSpan]="2"></dxi-item>
+    </dxo-form>
+  </dxo-editing>
 
   <dxi-column dataField="id" caption="ID"></dxi-column>
   <dxi-column dataField="numeroNota" caption="Numero Nota"></dxi-column>
@@ -39,9 +38,14 @@
     ></dx-select-box>
   </div>
 
-
   <div *dxTemplate="let data of 'itensCellTemplate'">
-    <dx-data-grid [dataSource]="data.value">
+    <dx-data-grid
+
+    [dataSource]="data.value"
+    (onRowUpdated)="updateDataItens($event)"
+    (onRowInserted)="insertDataItens($event)"
+    (onRowRemoved)="deleteDataItens($event)"
+    (onEditingStart)="editingProduct($event)">
       <dxo-editing
         mode="row"
         [allowAdding]="true"
@@ -49,17 +53,19 @@
         [allowUpdating]="true">
       </dxo-editing>
 
+      <dxi-column dataField="id" caption="ID"></dxi-column>
       <dxi-column dataField="nota" caption="Numero da Nota"></dxi-column>
       <dxi-column dataField="itensSequenciais" caption="Itens da Nota"></dxi-column>
-      <dxi-column dataField="produto_id" caption="Produto" editCellTemplate="selectBoxProdutos"></dxi-column>
+      <dxi-column dataField="produto" caption="Produto" editCellTemplate="selectBoxProdutos" [customizeText]="showNameProduct"></dxi-column>
       <dxi-column dataField="quantProdutos" caption="Quantidade"></dxi-column>
       <dxi-column dataField="valorTotal" caption="Total"></dxi-column>
 
       <div *dxTemplate="let product of 'selectBoxProdutos'">
         <dx-select-box
           [items]="produtoSource"
-          displayExpr="descricao">
-
+          displayExpr="descricao"
+          [value]="selectProdutoDefaultName"
+          (onValueChanged)="nameProductChanged($event)">
         </dx-select-box>
       </div>
 
