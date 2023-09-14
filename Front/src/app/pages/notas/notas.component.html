@@ -17,7 +17,7 @@
       <dxi-item dataField="numeroNota"></dxi-item>
       <dxi-item dataField="dataCompra"></dxi-item>
       <dxi-item dataField="cliente"></dxi-item>
-      <dxi-item dataField="totalNota"></dxi-item>
+      <dxi-item dataField="totalNota" ></dxi-item>
       <dxi-item dataField="itens" [colSpan]="2"></dxi-item>
     </dxo-form>
   </dxo-editing>
@@ -27,7 +27,7 @@
   <dxi-column dataField="dataCompra" caption="Data Compra" dataType="date"></dxi-column>
   <dxi-column dataField="cliente" caption="Cliente" editCellTemplate="clientesSelectBox" [customizeText]="showNameUser"></dxi-column>
   <dxi-column dataField="itens" caption="Itens" [visible]="false" editCellTemplate="itensCellTemplate"></dxi-column>
-  <dxi-column dataField="totalNota" caption="Total Nota"></dxi-column>
+  <dxi-column dataField="totalNota" caption="Total Nota" [allowEditing]="false"></dxi-column>
 
   <div *dxTemplate="let cliente of 'clientesSelectBox'">
     <dx-select-box
@@ -57,7 +57,7 @@
       <dxi-column dataField="itensSequenciais" caption="Itens da Nota"></dxi-column>
       <dxi-column dataField="produto" caption="Produto" editCellTemplate="selectBoxProdutos" [customizeText]="showNameProduct"></dxi-column>
       <dxi-column dataField="quantProdutos" caption="Quantidade"></dxi-column>
-      <dxi-column dataField="valorTotal" caption="Total"></dxi-column>
+      <dxi-column dataField="valorTotal" caption="Total" [allowEditing]="false"></dxi-column>
 
       <div *dxTemplate="let product of 'selectBoxProdutos'">
         <dx-select-box

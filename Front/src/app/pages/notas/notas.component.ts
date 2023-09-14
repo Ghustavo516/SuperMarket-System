@@ -24,6 +24,8 @@ export class NotasComponent implements OnInit{
   produtoSource: Produto[] = [];
   itensSource: ItensNota[] = [];
 
+  valueItemSelectJSON : any;//Armazena o valor completo em JSON daquele item
+
   URL: string = "http://localhost:8080/api";
 
   clienteSelecionadoEvent: any;
@@ -58,6 +60,10 @@ export class NotasComponent implements OnInit{
   insertDataNota(event:any){
     //Inseri novos valores
     const dado = event.data;
+
+    dado.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
+
+    console.log(dado);
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
       this.loadDataNotas();
     })
@@ -65,14 +71,16 @@ export class NotasComponent implements OnInit{
 
   updateDataNota(event: any){
     //Atualiza valores de notas
-    console.log("Atualizando")
     const updateData = event.data;
-    console.log(updateData);
     const id = event.key.id;
-    console.log(this.clienteSelecionadoEvent);
 
-    //Altera o nome do cliente com o valor substituido e mantem caso não alterado
-    event.data.cliente = this.clienteSelecionadoEvent;
+    event.data.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
+
+    // Calcule a soma total dos valores 'valorTotal' dos itens
+    const somaTotalItens = updateData.itens.reduce((total:number, item:any) => {
+      return total + item.valorTotal;
+    }, 0);
+    updateData.totalNota = somaTotalItens;
 
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
@@ -121,16 +129,22 @@ export class NotasComponent implements OnInit{
     this.clienteSelecionadoEvent = nameUserSearching;
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
     this.selectClientDefaultName = this.clientesSource[valueIndex]
+    this.valueItemSelectJSON = e //Armazena Json completo de itens para ser manipulado futuramente
+    console.log(this.valueItemSelectJSON)
   }
 
   //CRUD datagrid itens ----------------------------
 
   insertDataItens(event: any){
     const itens = event.data;
+    console.log(itens);
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
-    itens.nota = {
-      id: event.data.nota
-    }
+    itens.nota = {id: event.data.nota} //Formata a estrutura de nota
+
+    //Atualiza o valor total
+    const quantidadeProdutos = itens.quantProdutos;
+    const valorUnitario = itens.produto.valorUnitario;
+    itens.valorTotal = valorUnitario * quantidadeProdutos;
 
     this.itensService.insertItensNota(this.URL, itens).subscribe(() => {
       this.loadDataNotas();
@@ -141,13 +155,13 @@ export class NotasComponent implements OnInit{
   updateDataItens(event: any){
     const updateItens = event.data;
     const id = event.key.id;
-
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
+    updateItens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
-    updateItens.nota = {
-      id: event.data.nota
-    }
-    console.log(updateItens)
+    //Atualiza o valor total
+    const quantidadeProdutos = updateItens.quantProdutos;
+    const valorUnitario = updateItens.produto.valorUnitario;
+    updateItens.valorTotal = valorUnitario * quantidadeProdutos;
 
     this.itensService.updateItensNota(this.URL, id, updateItens).subscribe(() => {
         this.loadDataNotas();
@@ -155,12 +169,26 @@ export class NotasComponent implements OnInit{
   }
 
   deleteDataItens(event: any){
-    console.log('deletando');
-    console.log(event)
+    const deleteItens = event.data;
     const id = event.data.id;
-    this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
-      this.loadDataNotas();
-    })
+
+    const updateNota = this.valueItemSelectJSON.data;
+    const idUpdateNota = this.valueItemSelectJSON.key.id;
+
+    // this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
+    //   this.loadDataNotas();
+    // })
+
+    // this.notasService.updateNota(this.URL, idUpdateNota, updateNota).subscribe(() => {
+    //   console.log("atualizado")
+    //   this.loadDataNotas();
+    // })
+
+    console.log(updateNota)
+    console.log(idUpdateNota)
+
+    console.log(deleteItens)
+
   }
 
   showNameProduct(nameProduct: any){
@@ -172,7 +200,6 @@ export class NotasComponent implements OnInit{
 
   nameProductChanged(productName: any){
     this.produtoSelecionadoEvent = productName.value;
-    console.log(productName)
   }
 
   editingProduct(product: any){
