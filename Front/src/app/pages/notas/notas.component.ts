@@ -89,16 +89,10 @@ export class NotasComponent implements OnInit{
     })
   }
 
-  handleOptionChanged(event: any) {
-    if (event.name === 'dataSource') {
-      // Aqui você pode lidar com a mudança nos dados do JSON
-      console.log('Dados do JSON foram alterados:', event.value);
-    }
-  }
-
   deleteDataNota(event:any){
     //Deleta valores de notas
     console.log("Deletando")
+    console.log(event)
     const id = event.key.id;
     this.notasService.deleteNota(this.URL, id).subscribe(() => {
       this.loadDataNotas();
@@ -143,22 +137,30 @@ export class NotasComponent implements OnInit{
   }
 
   //CRUD datagrid itens ----------------------------
-
   insertDataItens(event: any){
     const itens = event.data;
     console.log(itens);
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
     itens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
-    //Atualiza o valor total
-    const quantidadeProdutos = itens.quantProdutos;
-    const valorUnitario = itens.produto.valorUnitario;
-    itens.valorTotal = valorUnitario * quantidadeProdutos;
+    const ValorAtualizado =  this.updateValorTotal(itens); //Atualiza o valor total
 
-    this.itensService.insertItensNota(this.URL, itens).subscribe(() => {
+    this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
       this.loadDataNotas();
       //Rever o conceito se deve ser loadNota ou loadItens para melhor funcionamento
     })
+  }
+
+  teset(event: any){
+
+
+
+    // const quantidadeProdutos = updateItens.quantProdutos;
+    // const valorUnitario = updateItens.produto.valorUnitario;
+    // updateItens.valorTotal = valorUnitario * quantidadeProdutos;
+
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    console.log(event)
   }
 
   updateDataItens(event: any){
@@ -167,14 +169,19 @@ export class NotasComponent implements OnInit{
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
     updateItens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
-    //Atualiza o valor total
+    const ValorAtualizado =  this.updateValorTotal(updateItens); //Atualiza o valor total
+
+    this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
+        this.loadDataNotas();
+    });
+  }
+
+  updateValorTotal(updateItens: any){
+    //Atualiza o valor total de nota
     const quantidadeProdutos = updateItens.quantProdutos;
     const valorUnitario = updateItens.produto.valorUnitario;
     updateItens.valorTotal = valorUnitario * quantidadeProdutos;
-
-    this.itensService.updateItensNota(this.URL, id, updateItens).subscribe(() => {
-        this.loadDataNotas();
-    });
+    return updateItens;
   }
 
   deleteDataItens(event: any){
@@ -183,7 +190,9 @@ export class NotasComponent implements OnInit{
       this.loadDataNotas();
     },
     (error) => {
-      console.error('Erro durante a exclusão:', error);
+      if (error.status !== 200) {
+        console.error('Erro durante a exclusão:', error);
+      }
     })
   }
 
