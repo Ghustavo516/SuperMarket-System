@@ -25,7 +25,7 @@ public class ItensNota {
     private Long id;
     
     //Relacionamento ItensNota - Notas
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private NotaFiscal nota;
     
     //Declaração da coluna totalNota

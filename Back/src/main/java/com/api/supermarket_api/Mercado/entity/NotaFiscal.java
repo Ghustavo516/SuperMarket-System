@@ -35,7 +35,7 @@ public class NotaFiscal {
     @Column(name = "totalNota")
     private BigDecimal totalNota;
 
-    @OneToMany(mappedBy = "nota", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "nota", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<ItensNota> itens;
 
 

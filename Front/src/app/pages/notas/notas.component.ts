@@ -18,6 +18,7 @@ import { ItensNota } from 'src/app/model/itens';
 })
 export class NotasComponent implements OnInit{
 
+
   //Dados do banco
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
@@ -35,6 +36,7 @@ export class NotasComponent implements OnInit{
   selectProdutoDefaultName: any;
 
   itens: ItensNota[] = []
+
 
   constructor(
     private notasService: NotasService,
@@ -85,6 +87,13 @@ export class NotasComponent implements OnInit{
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
     })
+  }
+
+  handleOptionChanged(event: any) {
+    if (event.name === 'dataSource') {
+      // Aqui você pode lidar com a mudança nos dados do JSON
+      console.log('Dados do JSON foram alterados:', event.value);
+    }
   }
 
   deleteDataNota(event:any){
@@ -169,26 +178,13 @@ export class NotasComponent implements OnInit{
   }
 
   deleteDataItens(event: any){
-    const deleteItens = event.data;
     const id = event.data.id;
-
-    const updateNota = this.valueItemSelectJSON.data;
-    const idUpdateNota = this.valueItemSelectJSON.key.id;
-
-    // this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
-    //   this.loadDataNotas();
-    // })
-
-    // this.notasService.updateNota(this.URL, idUpdateNota, updateNota).subscribe(() => {
-    //   console.log("atualizado")
-    //   this.loadDataNotas();
-    // })
-
-    console.log(updateNota)
-    console.log(idUpdateNota)
-
-    console.log(deleteItens)
-
+    this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
+      this.loadDataNotas();
+    },
+    (error) => {
+      console.error('Erro durante a exclusão:', error);
+    })
   }
 
   showNameProduct(nameProduct: any){
