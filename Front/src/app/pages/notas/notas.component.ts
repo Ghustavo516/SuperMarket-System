@@ -52,11 +52,15 @@ export class NotasComponent implements OnInit{
     this.createModeForm = value
   }
 
+  teste(event: any){
+
+  }
+
   //DATAGRID NOTAS --------------------------------------------------------------
   loadDataNotas(){ //Carrega todas as notas
     this.notasService.loadNotas(this.URL).subscribe((notas) => {
       this.notaSource = notas;
-    })
+    });
   }
 
   insertDataNota(event:any){ //Insere novas notas
@@ -64,7 +68,7 @@ export class NotasComponent implements OnInit{
     dado.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
       this.loadDataNotas();
-    })
+    });
   }
 
   updateDataNota(event: any){//Atualiza valores de notas
@@ -81,7 +85,7 @@ export class NotasComponent implements OnInit{
     console.log(updateData)
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
-    })
+    });
   }
 
   deleteDataNota(event:any){ //Deleta valores de notas
@@ -130,7 +134,7 @@ export class NotasComponent implements OnInit{
 
     this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
       this.loadDataNotas();
-    })
+    });
   }
 
   updateDataItens(event: any){
@@ -150,7 +154,7 @@ export class NotasComponent implements OnInit{
     const quantidadeProdutos = updateItens.quantProdutos;
     const valorUnitario = updateItens.produto.valorUnitario;
     updateItens.valorTotal = valorUnitario * quantidadeProdutos;
-    this.updateDataNota(this.valueItemSelectJSON)
+    //this.updateDataNota(this.valueItemSelectJSON) //Funcionalidade para atualizar o valor total ao alterar o valor de cada itens
     return updateItens;
   }
 
@@ -163,7 +167,7 @@ export class NotasComponent implements OnInit{
       if (error.status !== 200) {
         console.error('Erro durante a exclusão:', error);
       }
-    })
+    });
   }
 
   showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos
