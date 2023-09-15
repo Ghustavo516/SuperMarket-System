@@ -10,6 +10,7 @@ import { Nota } from 'src/app/model/nota';
 import { Cliente } from 'src/app/model/cliente';
 import { Produto } from 'src/app/model/produto';
 import { ItensNota } from 'src/app/model/itens';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-notas',
@@ -18,6 +19,7 @@ import { ItensNota } from 'src/app/model/itens';
 })
 export class NotasComponent implements OnInit{
   //Classe das tabelas banco de dados
+
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
   produtoSource: Produto[] = [];
@@ -25,7 +27,8 @@ export class NotasComponent implements OnInit{
 
   URL: string = "http://localhost:8080/api"; //URL base para as requisições
 
-  valueItemSelectJSON : any;//Armazena o valor completo em JSON daquele item
+  valueObjectNota : any;//Armazena o valor completo em JSON daquele item
+  valueObjectItem: any;
 
   //Armazena o valor de cliente/produto e define valor default aos selectBox
   clienteSelecionadoEvent: any;
@@ -40,7 +43,7 @@ export class NotasComponent implements OnInit{
     private clienteService: ClientesService,
     private produtoService: ProdutosService,
     private itensService: ItensNotaService) {
-  }
+    }
 
   ngOnInit(): void {
     this.loadDataNotas();
@@ -50,9 +53,15 @@ export class NotasComponent implements OnInit{
 
   setModeCreate(value: boolean){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
     this.createModeForm = value
+    this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
   }
 
-  teste(event: any){
+  teste(){
+    console.log("Dados antes de editar:")
+    console.log(this.valueObjectNota)
+
+    console.log("Dados depois de editar:")
+    console.log(this.valueObjectItem)
 
   }
 
@@ -82,7 +91,14 @@ export class NotasComponent implements OnInit{
     }, 0);
 
     updateData.totalNota = somaTotalItens; //Atualiza o valorTotal com o valor atualizado
-    console.log(updateData)
+
+    //Remove o {"id": numeroId} do atributo nota
+    for(let checkIdItens of updateData.itens){
+      if(checkIdItens.nota.hasOwnProperty('id')){
+        checkIdItens.nota = parseInt(checkIdItens.nota.id)
+      }
+    }
+
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
     });
@@ -115,7 +131,7 @@ export class NotasComponent implements OnInit{
     e.data.numeroNota = e.data.id;
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
     this.selectClientDefaultName = this.clientesSource[valueIndex];
-    this.valueItemSelectJSON = e;
+    this.valueObjectNota = e;
   }
 
   loadDataProducts(){ //Carrega todos os produtos cadastrados no banco de dados
@@ -128,23 +144,27 @@ export class NotasComponent implements OnInit{
   insertDataItens(event: any){
     const itens = event.data;
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
-    itens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
+    if(!itens.nota.hasOwnProperty('id')){
+      itens.nota = {id: parseInt(event.data.nota)} //Formata a estrutura de nota
+    }
     const ValorAtualizado =  this.updateValorTotalEachItens(itens); //Atualiza o valor total
-
     this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
       this.loadDataNotas();
     });
   }
 
-  updateDataItens(event: any){
+  updateDataItens(event: any, data:any){
     const updateItens = event.data;
     const id = event.key.id;
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
-    updateItens.nota = {id: event.data.nota} //Formata a estrutura de nota
+
+    if(!updateItens.nota.hasOwnProperty('id')){
+      updateItens.nota = {id: parseInt(event.data.nota)} //Formata a estrutura de nota
+    }
 
     const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total do itens editado
-
+    this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
     this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
         this.loadDataNotas();
     });

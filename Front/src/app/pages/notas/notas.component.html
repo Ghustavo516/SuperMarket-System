@@ -7,7 +7,6 @@
   (onEditCanceled)="setModeCreate(false)"
   (onRowInserted)="insertDataNota($event)"
   (onRowUpdated)="updateDataNota($event)"
-  (onEditorPrepared)="teste($event)"
   (onRowRemoved)="deleteDataNota($event)"
   (onEditingStart)="editingProcess($event)">
   <dxo-scrolling mode="virtual"></dxo-scrolling>
@@ -65,7 +64,7 @@
     <ng-container *ngIf="data.value && data.value.length >= 0; else noDataTemplate">
       <dx-data-grid
       [dataSource]="data.value || []"
-      (onRowUpdated)="updateDataItens($event)"
+      (onRowUpdated)="updateDataItens($event, data)"
       (onRowInserted)="insertDataItens($event)"
       (onRowRemoved)="deleteDataItens($event)"
       (onEditingStart)="editingProduct($event)">
