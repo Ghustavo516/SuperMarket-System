@@ -36,10 +36,10 @@
     </div>
 
     <dxo-form [colCount]="2">
-      <dxi-item dataField="numeroNota"></dxi-item>
-      <dxi-item dataField="dataCompra"></dxi-item>
-      <dxi-item dataField="cliente"></dxi-item>
-      <dxi-item dataField="totalNota" ></dxi-item>
+      <dxi-item dataField="numeroNota"><dxi-validation-rule type="required"></dxi-validation-rule></dxi-item>
+      <dxi-item dataField="dataCompra"><dxi-validation-rule type="required"></dxi-validation-rule></dxi-item>
+      <dxi-item dataField="cliente"><dxi-validation-rule type="required"></dxi-validation-rule></dxi-item>
+      <dxi-item dataField="totalNota"></dxi-item>
       <dxi-item dataField="itens" [colSpan]="2"></dxi-item>
     </dxo-form>
   </dxo-editing>

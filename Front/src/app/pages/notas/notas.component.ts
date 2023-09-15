@@ -164,10 +164,12 @@ export class NotasComponent implements OnInit{
     }
 
     const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total do itens editado
-    this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
+
     this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
         this.loadDataNotas();
     });
+
+    this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
   }
 
   updateValorTotalEachItens(updateItens: any){ //Atualiza o valor total do item
