@@ -24,13 +24,11 @@ export class ProdutosService {
   }
 
   updateProdutos(URL: string, key: number, values: any){
-    console.log('aaaaaaaaaaaaaaaaaaaaa')
     return this.http.get(`${URL}/produto/${key}`).toPromise()
       .then((ValorExistente: any) => {
         const atualizaValorExistente = { ...ValorExistente, ...values};
         return this.http.put(`${URL}/produto/${key}`, atualizaValorExistente).toPromise();
       });
-
   }
 
   deleteProdutos(URL: string, key: number): Promise<any>{

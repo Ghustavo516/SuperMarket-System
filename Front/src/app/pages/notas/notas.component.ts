@@ -17,25 +17,23 @@ import { ItensNota } from 'src/app/model/itens';
   styleUrls: ['./notas.component.scss']
 })
 export class NotasComponent implements OnInit{
-
-
-  //Dados do banco
+  //Classe das tabelas banco de dados
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
   produtoSource: Produto[] = [];
   itensSource: any[] = [];
 
+  URL: string = "http://localhost:8080/api"; //URL base para as requisições
+
   valueItemSelectJSON : any;//Armazena o valor completo em JSON daquele item
 
-  URL: string = "http://localhost:8080/api";
-
+  //Armazena o valor de cliente/produto e define valor default aos selectBox
   clienteSelecionadoEvent: any;
   selectClientDefaultName: any;
-
   produtoSelecionadoEvent: any;
   selectProdutoDefaultName: any;
 
-  createModeForm: boolean = false;
+  createModeForm: boolean = false; //Mode de criar nova nota
 
   constructor(
     private notasService: NotasService,
@@ -50,21 +48,18 @@ export class NotasComponent implements OnInit{
     this.loadDataProducts();
   }
 
-  setModeCreate(value: boolean){
+  setModeCreate(value: boolean){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
     this.createModeForm = value
-
   }
 
-  //CRUD DataGrid Nota -----------------------------------
-  loadDataNotas(){
-    //Carrega todos os valores da nota
+  //DATAGRID NOTAS --------------------------------------------------------------
+  loadDataNotas(){ //Carrega todas as notas
     this.notasService.loadNotas(this.URL).subscribe((notas) => {
       this.notaSource = notas;
     })
   }
 
-  insertDataNota(event:any){
-    //Inseri novos valores
+  insertDataNota(event:any){ //Insere novas notas
     const dado = event.data;
     dado.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
@@ -72,82 +67,69 @@ export class NotasComponent implements OnInit{
     })
   }
 
-  updateDataNota(event: any){
-    //Atualiza valores de notas
+  updateDataNota(event: any){//Atualiza valores de notas
     const updateData = event.data;
     const id = event.key.id;
-    event.data.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
+    updateData.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
 
-    // Calcule a soma total dos valores 'valorTotal' dos itens
+    // Calcula a soma total de cada itens dentro da nota
     const somaTotalItens = updateData.itens.reduce((total:number, item:any) => {
       return total + item.valorTotal;
     }, 0);
 
-    console.log(somaTotalItens);
-    updateData.totalNota = somaTotalItens;
+    updateData.totalNota = somaTotalItens; //Atualiza o valorTotal com o valor atualizado
     console.log(updateData)
-
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
     })
   }
 
-  deleteDataNota(event:any){
-    //Deleta valores de notas
-    console.log("Deletando")
-    console.log(event)
+  deleteDataNota(event:any){ //Deleta valores de notas
     const id = event.key.id;
-    this.notasService.deleteNota(this.URL, id).subscribe(() => {
-      this.loadDataNotas();
-    })
+    this.notasService.deleteNota(this.URL, id).subscribe(() => {this.loadDataNotas();})
   }
 
-  loadDataCliente(){
-    //Carrega todos os clientes cadastrados no banco de dados
+  loadDataCliente(){ //Carrega todos os clientes cadastrados no banco de dados
     this.clienteService.loadClienteSelectBox(this.URL).subscribe((cliente) => {
       this.clientesSource = cliente;
     });
   }
 
-  loadDataProducts(){
-    //Carrega todos os produtos cadastrados no banco de dados
-    this.produtoService.loadProdutosSelectBox(this.URL).subscribe((produto) => {
-      this.produtoSource = produto;
-    });
-  }
-
-  nameChangeClient(event: any){
-    //Armazena o valor selecionado com o dado do cliente, quando evento acionado
+  nameChangeClient(event: any){ //Armazena o valor selecionado com o dado do cliente, quando evento acionado
     this.clienteSelecionadoEvent = event.value;
   }
 
-  showNameUser(nameClient: any){
-    //Exibe o nome do cliente na coluna de clientes
+  showNameUser(nameClient: any){ //Exibe o nome do cliente na coluna de clientes
     if(nameClient.value && nameClient.value.nome){
       return nameClient.value.nome;
     }
   }
 
-  editingProcess(e:any){//Evento quando clica no botão de edição
-    //Seleciona o nome do cliente e ja seta como padrão dentro do popup com o nome do cliente ja preenchido
+  editingProcess(e:any){ //Evento quando clica no botão de edição
     const nameUserSearching = e.data.cliente;
     this.clienteSelecionadoEvent = nameUserSearching;
+    e.data.numeroNota = e.data.id;
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
-    this.selectClientDefaultName = this.clientesSource[valueIndex]
-    this.valueItemSelectJSON = e //Armazena Json completo de itens para ser manipulado futuramente
+    this.selectClientDefaultName = this.clientesSource[valueIndex];
+    this.valueItemSelectJSON = e;
   }
 
-  //CRUD datagrid itens ----------------------------
+  loadDataProducts(){ //Carrega todos os produtos cadastrados no banco de dados
+    this.produtoService.loadProdutosSelectBox(this.URL).subscribe((produto) => {
+      this.produtoSource = produto;
+    });
+  }
+
+  //DATAGRID ITENS -----------------------------------------------------------------------------------
   insertDataItens(event: any){
     const itens = event.data;
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
-    itens.nota = {id: event.data.nota}//Formata a estrutura de nota
+    itens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
     const ValorAtualizado =  this.updateValorTotalEachItens(itens); //Atualiza o valor total
 
     this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
       this.loadDataNotas();
-      //Rever o conceito se deve ser loadNota ou loadItens para melhor funcionamento
     })
   }
 
@@ -157,24 +139,22 @@ export class NotasComponent implements OnInit{
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
     updateItens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
-    const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total
+    const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total do itens editado
 
     this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
         this.loadDataNotas();
     });
   }
 
-  updateValorTotalEachItens(updateItens: any){
-    //Atualiza o valor total de nota
+  updateValorTotalEachItens(updateItens: any){ //Atualiza o valor total do item
     const quantidadeProdutos = updateItens.quantProdutos;
     const valorUnitario = updateItens.produto.valorUnitario;
     updateItens.valorTotal = valorUnitario * quantidadeProdutos;
-
     this.updateDataNota(this.valueItemSelectJSON)
     return updateItens;
   }
 
-  deleteDataItens(event: any){
+  deleteDataItens(event: any){ //Deleta o item da nota
     const id = event.data.id;
     this.itensService.deleteItensNota(this.URL, id).subscribe(() => {
       this.loadDataNotas();
@@ -186,18 +166,17 @@ export class NotasComponent implements OnInit{
     })
   }
 
-  showNameProduct(nameProduct: any){
-    //Exibe o nome de produtos na coluna de produtos
+  showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos
     if(nameProduct.value && nameProduct.value.descricao){
       return nameProduct.value.descricao;
     }
   }
 
-  nameProductChanged(productName: any){
+  nameProductChanged(productName: any){ //Armazena o nome do produto, quando alterado o selectBox
     this.produtoSelecionadoEvent = productName.value;
   }
 
-  editingProduct(product: any){
+  editingProduct(product: any){ //Obtem o nome de produto e popula o selectBox com valor default durant edição
     const productNameSearching = product.data.produto;
     this.produtoSelecionadoEvent = productNameSearching
 

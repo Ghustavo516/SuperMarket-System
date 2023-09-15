@@ -6,17 +6,20 @@
   [showBorders]="true">
   <dxo-scrolling mode="virtual"></dxo-scrolling>
   <dxo-editing
-      mode="form"
+      mode="popup"
       [allowUpdating]="true"
       [allowAdding]="true"
       [allowDeleting]="true">
+
+      <dxo-popup
+        title="Cliente"
+        [showTitle]="true"
+        [width]="700"
+        [height]="350">
+      </dxo-popup>
+
   </dxo-editing>
   <dxi-column dataField="id" caption="ID" [allowEditing]="false"></dxi-column>
   <dxi-column dataField="nome" caption="Nome"></dxi-column>
   <dxi-column dataField="codigo" caption="Codigo Cliente"></dxi-column>
 </dx-data-grid>
-
-
-<!-- https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/FormEditing/Angular/Light/ -->
-<!-- https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/CRUDOperations/Angular/Light/ -->
-<!-- https://js.devexpress.com/Documentation/ApiReference/Data_Layer/CustomStore/ -->
