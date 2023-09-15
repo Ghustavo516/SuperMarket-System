@@ -3,7 +3,7 @@ import { ProdutosService } from './../../shared/services/produtos.service';
 import { Component, OnInit } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DxDataGridModule, DxSelectBoxModule } from 'devextreme-angular';
+import { DxDataGridModule, DxSelectBoxModule, DxToastModule } from 'devextreme-angular';
 import { NotasService } from 'src/app/shared/services/notas.service';
 import { ClientesService } from 'src/app/shared/services/clientes.service';
 import { Nota } from 'src/app/model/nota';
@@ -23,7 +23,7 @@ export class NotasComponent implements OnInit{
   notaSource: Nota[] = [];
   clientesSource: Cliente[] = [];
   produtoSource: Produto[] = [];
-  itensSource: ItensNota[] = [];
+  itensSource: any[] = [];
 
   valueItemSelectJSON : any;//Armazena o valor completo em JSON daquele item
 
@@ -35,8 +35,7 @@ export class NotasComponent implements OnInit{
   produtoSelecionadoEvent: any;
   selectProdutoDefaultName: any;
 
-  itens: ItensNota[] = []
-
+  createModeForm: boolean = false;
 
   constructor(
     private notasService: NotasService,
@@ -51,6 +50,11 @@ export class NotasComponent implements OnInit{
     this.loadDataProducts();
   }
 
+  setModeCreate(value: boolean){
+    this.createModeForm = value
+
+  }
+
   //CRUD DataGrid Nota -----------------------------------
   loadDataNotas(){
     //Carrega todos os valores da nota
@@ -62,10 +66,7 @@ export class NotasComponent implements OnInit{
   insertDataNota(event:any){
     //Inseri novos valores
     const dado = event.data;
-
     dado.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
-
-    console.log(dado);
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
       this.loadDataNotas();
     })
@@ -75,14 +76,16 @@ export class NotasComponent implements OnInit{
     //Atualiza valores de notas
     const updateData = event.data;
     const id = event.key.id;
-
     event.data.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
 
     // Calcule a soma total dos valores 'valorTotal' dos itens
     const somaTotalItens = updateData.itens.reduce((total:number, item:any) => {
       return total + item.valorTotal;
     }, 0);
+
+    console.log(somaTotalItens);
     updateData.totalNota = somaTotalItens;
+    console.log(updateData)
 
     this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
       this.loadDataNotas();
@@ -99,7 +102,6 @@ export class NotasComponent implements OnInit{
     })
   }
 
-  //Carrega dados cliente e produtos ------------
   loadDataCliente(){
     //Carrega todos os clientes cadastrados no banco de dados
     this.clienteService.loadClienteSelectBox(this.URL).subscribe((cliente) => {
@@ -133,34 +135,20 @@ export class NotasComponent implements OnInit{
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
     this.selectClientDefaultName = this.clientesSource[valueIndex]
     this.valueItemSelectJSON = e //Armazena Json completo de itens para ser manipulado futuramente
-    console.log(this.valueItemSelectJSON)
   }
 
   //CRUD datagrid itens ----------------------------
   insertDataItens(event: any){
     const itens = event.data;
-    console.log(itens);
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
-    itens.nota = {id: event.data.nota} //Formata a estrutura de nota
+    itens.nota = {id: event.data.nota}//Formata a estrutura de nota
 
-    const ValorAtualizado =  this.updateValorTotal(itens); //Atualiza o valor total
+    const ValorAtualizado =  this.updateValorTotalEachItens(itens); //Atualiza o valor total
 
     this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
       this.loadDataNotas();
       //Rever o conceito se deve ser loadNota ou loadItens para melhor funcionamento
     })
-  }
-
-  teset(event: any){
-
-
-
-    // const quantidadeProdutos = updateItens.quantProdutos;
-    // const valorUnitario = updateItens.produto.valorUnitario;
-    // updateItens.valorTotal = valorUnitario * quantidadeProdutos;
-
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    console.log(event)
   }
 
   updateDataItens(event: any){
@@ -169,18 +157,20 @@ export class NotasComponent implements OnInit{
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
     updateItens.nota = {id: event.data.nota} //Formata a estrutura de nota
 
-    const ValorAtualizado =  this.updateValorTotal(updateItens); //Atualiza o valor total
+    const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total
 
     this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
         this.loadDataNotas();
     });
   }
 
-  updateValorTotal(updateItens: any){
+  updateValorTotalEachItens(updateItens: any){
     //Atualiza o valor total de nota
     const quantidadeProdutos = updateItens.quantProdutos;
     const valorUnitario = updateItens.produto.valorUnitario;
     updateItens.valorTotal = valorUnitario * quantidadeProdutos;
+
+    this.updateDataNota(this.valueItemSelectJSON)
     return updateItens;
   }
 
@@ -221,7 +211,8 @@ export class NotasComponent implements OnInit{
   imports: [
     CommonModule,
     DxDataGridModule,
-    DxSelectBoxModule
+    DxSelectBoxModule,
+    DxToastModule
 
   ],
   exports: [NotasComponent]
