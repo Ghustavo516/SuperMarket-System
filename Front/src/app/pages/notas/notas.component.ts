@@ -132,6 +132,7 @@ export class NotasComponent implements OnInit{
 
   //DATAGRID ITENS -----------------------------------------------------------------------------------
   insertDataItens(event: any){
+    console.log(event)
     const itens = event.data;
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
 
@@ -145,6 +146,7 @@ export class NotasComponent implements OnInit{
   }
 
   updateDataItens(event: any, data:any){
+
     const updateItens = event.data;
     const id = event.key.id;
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
@@ -187,7 +189,8 @@ export class NotasComponent implements OnInit{
 
     const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
     item.itensSequenciais > maior ? item.itensSequenciais : maior, -Infinity);
-    //event.data.itens.itensSequenciais = maiorItensSequenciais
+
+    event.data.itensSequenciais = (maiorItensSequenciais + 1)
   }
 
   showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos
