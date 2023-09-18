@@ -64,6 +64,7 @@
     <ng-container *ngIf="data.value && data.value.length >= 0; else noDataTemplate">
       <dx-data-grid
       [dataSource]="data.value || []"
+      (onInitNewRow)="setIdNumberNota($event)"
       (onRowUpdated)="updateDataItens($event, data)"
       (onRowInserted)="insertDataItens($event)"
       (onRowRemoved)="deleteDataItens($event)"

@@ -11,13 +11,9 @@
 	<groupId>com.api</groupId>
 	<artifactId>supermarket_api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>supermarket_api</name>
+	<name>supermarket_api</name>
 	<description>Demo project for Spring Boot</description>
-    <modules>
-        <module>untitled</module>
-    </modules>
-    <properties>
+	<properties>
 		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>

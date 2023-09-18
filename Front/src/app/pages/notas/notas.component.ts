@@ -132,6 +132,7 @@ export class NotasComponent implements OnInit{
     const valueIndex = this.clientesSource.findIndex((cliente) => cliente.nome === nameUserSearching.nome);
     this.selectClientDefaultName = this.clientesSource[valueIndex];
     this.valueObjectNota = e;
+    this.valueObjectItem = e.data; //Armazena o valor do id da nota para preencher automaticamente
   }
 
   loadDataProducts(){ //Carrega todos os produtos cadastrados no banco de dados
@@ -190,6 +191,18 @@ export class NotasComponent implements OnInit{
         console.error('Erro durante a exclusão:', error);
       }
     });
+  }
+
+  setIdNumberNota(event:any){
+    console.log(this.valueObjectItem)
+
+    event.data.nota = this.valueObjectItem.id;
+
+    const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
+    item.itensSequenciais > maior ? item.itensSequenciais : maior, -Infinity);
+    event.data.itens.itensSequenciais = maiorItensSequenciais
+
+    console.log('Maior valor em itensSequenciais:', (maiorItensSequenciais + 1));
   }
 
   showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos
