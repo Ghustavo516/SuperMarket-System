@@ -36,6 +36,9 @@ export class NotasComponent implements OnInit{
 
   createModeForm: boolean = false; //Mode de criar nova nota
 
+  //Armazena os valores antes de salvar em mode de criação de nota
+  createModeItensStorage: any
+
   constructor(
     private notasService: NotasService,
     private clienteService: ClientesService,
@@ -49,8 +52,18 @@ export class NotasComponent implements OnInit{
     this.loadDataProducts();
   }
 
-  setModeCreate(value: boolean){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
+  setModeCreate(value: boolean, event:any){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
     this.createModeForm = value
+
+    if(this.createModeForm){
+      let maxValor = 0;
+      for(let e of this.notaSource){
+        if(e.id != undefined && e.id > maxValor){
+          maxValor = e.id
+        }
+      }
+      event.data.numeroNota = (maxValor + 1)
+    }
     this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
   }
 
@@ -65,7 +78,11 @@ export class NotasComponent implements OnInit{
     const dado = event.data;
     dado.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
+      this.itensService.insertItensNota(this.URL, this.createModeItensStorage).subscribe(() => {this.loadDataNotas();});
       this.loadDataNotas();
+      console.log(this.valueObjectNota)
+
+      this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
     });
   }
 
@@ -95,7 +112,13 @@ export class NotasComponent implements OnInit{
 
   deleteDataNota(event:any){ //Deleta valores de notas
     const id = event.key.id;
-    this.notasService.deleteNota(this.URL, id).subscribe(() => {this.loadDataNotas();})
+    this.notasService.deleteNota(this.URL, id).subscribe(() => {this.loadDataNotas();
+    },
+    (error) => {
+      if (error.status !== 200) {
+        console.error('Erro durante a exclusão:', error);
+      }
+    });
   }
 
   loadDataCliente(){ //Carrega todos os clientes cadastrados no banco de dados
@@ -132,21 +155,24 @@ export class NotasComponent implements OnInit{
 
   //DATAGRID ITENS -----------------------------------------------------------------------------------
   insertDataItens(event: any){
-    console.log(event)
     const itens = event.data;
+
     itens.produto = this.produtoSelecionadoEvent //Adiciona o valores de produtos
 
     if(!itens.nota.hasOwnProperty('id')){
       itens.nota = {id: parseInt(event.data.nota)} //Formata a estrutura de nota
     }
     const ValorAtualizado =  this.updateValorTotalEachItens(itens); //Atualiza o valor total
-    this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {
-      this.loadDataNotas();
-    });
+
+    //Em modo de criação de nota os valores de itens ficam armazenado para criar a nota
+    if(this.createModeForm){
+      this.createModeItensStorage = ValorAtualizado
+    }else{
+      this.itensService.insertItensNota(this.URL, ValorAtualizado).subscribe(() => {this.loadDataNotas();});
+    }
   }
 
   updateDataItens(event: any, data:any){
-
     const updateItens = event.data;
     const id = event.key.id;
     updateItens.produto = this.produtoSelecionadoEvent //Adiciona o valor de produto
@@ -157,11 +183,13 @@ export class NotasComponent implements OnInit{
 
     const ValorAtualizado =  this.updateValorTotalEachItens(updateItens); //Atualiza o valor total do itens editado
 
-    this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {
-        this.loadDataNotas();
-    });
-
-    this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
+    //Em modo de criação de nota os valores de itens ficam armazenado para criar a nota
+    if(this.createModeForm){
+      this.createModeItensStorage = ValorAtualizado
+    }else{
+      this.itensService.updateItensNota(this.URL, id, ValorAtualizado).subscribe(() => {this.loadDataNotas();});
+      this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
+    }
   }
 
   updateValorTotalEachItens(updateItens: any){ //Atualiza o valor total do item
@@ -185,12 +213,12 @@ export class NotasComponent implements OnInit{
   }
 
   setIdNumberNota(event:any){
-    event.data.nota = this.valueObjectItem.id;
-
-    const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
-    item.itensSequenciais > maior ? item.itensSequenciais : maior, 0);
-
-    event.data.itensSequenciais = (maiorItensSequenciais + 1)
+    if(this.createModeForm == false){
+      event.data.nota = this.valueObjectItem.id;
+      const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
+      item.itensSequenciais > maior ? item.itensSequenciais : maior, 0);
+      event.data.itensSequenciais = (maiorItensSequenciais + 1)
+    }
   }
 
   showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos

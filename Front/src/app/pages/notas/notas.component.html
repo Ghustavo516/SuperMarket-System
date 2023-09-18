@@ -2,9 +2,9 @@
 <dx-data-grid
   id="grid"
   [dataSource]="notaSource"
-  (onInitNewRow)="setModeCreate(true)"
-  (onSaved)="setModeCreate(false)"
-  (onEditCanceled)="setModeCreate(false)"
+  (onInitNewRow)="setModeCreate(true, $event)"
+  (onSaved)="setModeCreate(false, $event)"
+  (onEditCanceled)="setModeCreate(false, $event)"
   (onRowInserted)="insertDataNota($event)"
   (onRowUpdated)="updateDataNota($event)"
   (onRowRemoved)="deleteDataNota($event)"
@@ -22,8 +22,8 @@
       <dxo-popup
         title="Criar Nota"
         [showTitle]="true"
-        [width]="700"
-        [height]="350">
+        [width]="800"
+        [height]="500">
       </dxo-popup>
     </div>
     <div *ngIf="createModeForm == false">
@@ -61,39 +61,34 @@
   </div>
 
   <div *dxTemplate="let data of 'itensCellTemplate'">
-    <ng-container *ngIf="data.value && data.value.length >= 0; else noDataTemplate">
-      <dx-data-grid
-      [dataSource]="data.value || []"
-      (onInitNewRow)="setIdNumberNota($event)"
-      (onRowUpdated)="updateDataItens($event, data)"
-      (onRowInserted)="insertDataItens($event)"
-      (onRowRemoved)="deleteDataItens($event)"
-      (onEditingStart)="editingProduct($event)">
-        <dxo-editing
-          mode="row"
-          [allowAdding]="true"
-          [allowDeleting]="true"
-          [allowUpdating]="true">
-        </dxo-editing>
+    <dx-data-grid
+    [dataSource]="data.value || []"
+    (onInitNewRow)="setIdNumberNota($event)"
+    (onRowUpdated)="updateDataItens($event, data)"
+    (onRowInserted)="insertDataItens($event)"
+    (onRowRemoved)="deleteDataItens($event)"
+    (onEditingStart)="editingProduct($event)">
+      <dxo-editing
+        mode="row"
+        [allowAdding]="true"
+        [allowDeleting]="true"
+        [allowUpdating]="true">
+      </dxo-editing>
 
-        <dxi-column dataField="nota" caption="Numero da Nota"></dxi-column>
-        <dxi-column dataField="itensSequenciais" caption="Itens da Nota"></dxi-column>
-        <dxi-column dataField="produto" caption="Produto" editCellTemplate="selectBoxProdutos" [customizeText]="showNameProduct"></dxi-column>
-        <dxi-column dataField="quantProdutos" caption="Quantidade"></dxi-column>
-        <dxi-column dataField="valorTotal" caption="Total" [allowEditing]="false"></dxi-column>
+      <dxi-column dataField="nota" caption="Numero da Nota"></dxi-column>
+      <dxi-column dataField="itensSequenciais" caption="Itens da Nota"></dxi-column>
+      <dxi-column dataField="produto" caption="Produto" editCellTemplate="selectBoxProdutos" [customizeText]="showNameProduct"></dxi-column>
+      <dxi-column dataField="quantProdutos" caption="Quantidade"></dxi-column>
+      <dxi-column dataField="valorTotal" caption="Total" [allowEditing]="false"></dxi-column>
 
-        <div *dxTemplate="let product of 'selectBoxProdutos'">
-          <dx-select-box
-            [items]="produtoSource"
-            displayExpr="descricao"
-            [value]="selectProdutoDefaultName"
-            (onValueChanged)="nameProductChanged($event)">
-          </dx-select-box>
-        </div>
-      </dx-data-grid>
-    </ng-container>
-    <ng-template #noDataTemplate>
-      <dx-toast [visible]="true" type="info" [displayTime]="5000" [hideOnOutsideClick]="true" message="Por favor, crie a nota primeiro antes de adicionar os itens."></dx-toast>
-    </ng-template>
+      <div *dxTemplate="let product of 'selectBoxProdutos'">
+        <dx-select-box
+          [items]="produtoSource"
+          displayExpr="descricao"
+          [value]="selectProdutoDefaultName"
+          (onValueChanged)="nameProductChanged($event)">
+        </dx-select-box>
+      </div>
+    </dx-data-grid>
   </div>
 </dx-data-grid>
