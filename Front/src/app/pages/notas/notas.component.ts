@@ -194,15 +194,12 @@ export class NotasComponent implements OnInit{
   }
 
   setIdNumberNota(event:any){
-    console.log(this.valueObjectItem)
 
     event.data.nota = this.valueObjectItem.id;
 
     const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
     item.itensSequenciais > maior ? item.itensSequenciais : maior, -Infinity);
-    event.data.itens.itensSequenciais = maiorItensSequenciais
-
-    console.log('Maior valor em itensSequenciais:', (maiorItensSequenciais + 1));
+    //event.data.itens.itensSequenciais = maiorItensSequenciais
   }
 
   showNameProduct(nameProduct: any){ //Exibe o nome de produtos na coluna de produtos
