@@ -9,8 +9,6 @@ import { ClientesService } from 'src/app/shared/services/clientes.service';
 import { Nota } from 'src/app/model/nota';
 import { Cliente } from 'src/app/model/cliente';
 import { Produto } from 'src/app/model/produto';
-import { ItensNota } from 'src/app/model/itens';
-import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-notas',
@@ -54,15 +52,6 @@ export class NotasComponent implements OnInit{
   setModeCreate(value: boolean){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
     this.createModeForm = value
     this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
-  }
-
-  teste(){
-    console.log("Dados antes de editar:")
-    console.log(this.valueObjectNota)
-
-    console.log("Dados depois de editar:")
-    console.log(this.valueObjectItem)
-
   }
 
   //DATAGRID NOTAS --------------------------------------------------------------
@@ -194,7 +183,6 @@ export class NotasComponent implements OnInit{
   }
 
   setIdNumberNota(event:any){
-
     event.data.nota = this.valueObjectItem.id;
 
     const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
