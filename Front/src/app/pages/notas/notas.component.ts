@@ -188,7 +188,7 @@ export class NotasComponent implements OnInit{
     event.data.nota = this.valueObjectItem.id;
 
     const maiorItensSequenciais = this.valueObjectItem.itens.reduce((maior:any, item:any) =>
-    item.itensSequenciais > maior ? item.itensSequenciais : maior, -Infinity);
+    item.itensSequenciais > maior ? item.itensSequenciais : maior, 0);
 
     event.data.itensSequenciais = (maiorItensSequenciais + 1)
   }
