@@ -54,7 +54,7 @@ export class NotasComponent implements OnInit{
 
   setModeCreate(value: boolean, event:any){ //Define o estado do template que será exidido ao abrir o popup de edição modo normal/criar
     this.createModeForm = value
-
+    //Encontra o valor da ultima nota e ja preenche o campo automaticamente
     if(this.createModeForm){
       let maxValor = 0;
       for(let e of this.notaSource){
@@ -71,6 +71,22 @@ export class NotasComponent implements OnInit{
   loadDataNotas(){ //Carrega todas as notas
     this.notasService.loadNotas(this.URL).subscribe((notas) => {
       this.notaSource = notas;
+
+      //Verifica se tem alguma nota sem a somaTotal e efetua o calculo
+      for (let e of this.notaSource) {
+        if (e.totalNota == null) {
+          if (e.itens && e.id) { // Verifica se e.itens está definido
+            const somaTotalItens = e.itens.reduce((total: number, item: any) => {
+              return total + item.valorTotal;
+            }, 0);
+
+            e.totalNota = somaTotalItens
+            this.notasService.updateNota(this.URL, e.id, e).subscribe(() => {
+              this.loadDataNotas();
+            });
+          }
+        }
+      }
     });
   }
 
@@ -80,34 +96,34 @@ export class NotasComponent implements OnInit{
     this.notasService.insertNota(this.URL, dado).subscribe(() => {
       this.itensService.insertItensNota(this.URL, this.createModeItensStorage).subscribe(() => {this.loadDataNotas();});
       this.loadDataNotas();
-      console.log(this.valueObjectNota)
-
       this.updateDataNota(this.valueObjectNota)//Atualiza a nota com o valor atualiado
     });
   }
 
   updateDataNota(event: any){//Atualiza valores de notas
-    const updateData = event.data;
-    const id = event.key.id;
-    updateData.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
+    if(event != null){
+      const updateData = event.data;
+      const id = event.key.id;
+      updateData.cliente = this.clienteSelecionadoEvent; //Inseri o nome do cliente
 
-    // Calcula a soma total de cada itens dentro da nota
-    const somaTotalItens = updateData.itens.reduce((total:number, item:any) => {
-      return total + item.valorTotal;
-    }, 0);
+      // Calcula a soma total de cada itens dentro da nota
+      const somaTotalItens = updateData.itens.reduce((total:number, item:any) => {
+        return total + item.valorTotal;
+      }, 0);
 
-    updateData.totalNota = somaTotalItens; //Atualiza o valorTotal com o valor atualizado
+      updateData.totalNota = somaTotalItens; //Atualiza o valorTotal com o valor atualizado
 
-    //Remove o {"id": numeroId} do atributo nota
-    for(let checkIdItens of updateData.itens){
-      if(checkIdItens.nota.hasOwnProperty('id')){
-        checkIdItens.nota = parseInt(checkIdItens.nota.id)
+      //Remove o {"id": numeroId} do atributo nota
+      for(let checkIdItens of updateData.itens){
+        if(checkIdItens.nota.hasOwnProperty('id')){
+          checkIdItens.nota = parseInt(checkIdItens.nota.id)
+        }
       }
-    }
 
-    this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
-      this.loadDataNotas();
-    });
+      this.notasService.updateNota(this.URL, id, updateData).subscribe(() => {
+        this.loadDataNotas();
+      });
+    }
   }
 
   deleteDataNota(event:any){ //Deleta valores de notas
